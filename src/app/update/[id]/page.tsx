@@ -1,42 +1,76 @@
 "use client";
 
-import { ArrowLeft } from 'lucide-react';
-import { useRouter } from "next/navigation";
-import { useState } from 'react';
-import axios from 'axios';
+import { ArrowLeft } from "lucide-react";
+import { useRouter, useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default function AddBook() {
+interface Post {
+  _id?: string;
+  title: string;
+  author: string;
+  isbn: number;
+  publishedYear: number;
+}
+
+export default function UpdateBook() {
   const router = useRouter();
+  const params = useParams();
+  const id = params?.id;
 
-  // Form state
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [isbn, setIsbn] = useState('');
-  const [publishedYear, setPublishedYear] = useState('');
+  const [book, setBook] = useState<Post | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    author: "",
+    isbn: "",
+    publishedYear: "",
+  });
+
+  useEffect(() => {
+    const fetchBook = async () => {
+      try {
+        const res = await fetch(`https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch book");
+        const data = await res.json();
+        setBook(data);
+        setFormData({
+          title: data.title,
+          author: data.author,
+          isbn: data.isbn,
+          publishedYear: String(data.publishedYear),
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Could not load book.");
+      }
+    };
+
+    if (id) fetchBook();
+  }, [id]);
 
   const handleClick = () => {
     router.push("/");
   };
 
-  
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const newBook = {
-        title,
-        author,
-        isbn,
-        publishedYear: Number(publishedYear),
-      };
+      const res = await fetch(`https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          isbn: Number(formData.isbn),
+          publishedYear: Number(formData.publishedYear),
+        }),
+      });
 
-      await axios.post("https://book-management-api-jvxp.onrender.com/api/v1/books", newBook);
+      if (!res.ok) throw new Error("Failed to update book");
 
-      alert("Book added successfully!");
-      router.push("/"); 
-    } catch (error) {
-      console.error("Error adding book:", error);
-      alert("Failed to add book.");
+      alert("Book updated successfully!");
+      router.push("/");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update book.");
     }
   };
 
@@ -44,30 +78,28 @@ export default function AddBook() {
     <div className="bg-white">
       <div className="text-black">
         <div className="p-8">
-          <button
-            onClick={handleClick}
+          <button onClick={handleClick}
             className="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700 hover:border-teal-500 hover:text-teal-500 hover:opacity-80 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Books
+            Back to Books Details
           </button>
-        
-          <h1 className="text-3xl font-bold mt-6">Add New Book</h1>
+
+          <h1 className="text-3xl font-bold mt-6">Edit Book</h1>
         </div>
 
-        <div className="flex pl-8 ">
+        <div className="flex pl-8">
           <div className="p-6 border border-gray-300 rounded-md shadow-xl w-fit px-3 pl-6">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               <div className="flex flex-col">
                 <label htmlFor="title" className="text-sm font-medium pb-3">Title</label>
                 <input
                   type="text"
                   id="title"
                   name="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-64 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400"
-                  placeholder="Enter book title"
                 />
               </div>
 
@@ -77,10 +109,9 @@ export default function AddBook() {
                   type="text"
                   id="author"
                   name="author"
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
+                  value={formData.author}
+                  onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                   className="w-64 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400"
-                  placeholder="Enter author name"
                 />
               </div>
 
@@ -90,10 +121,9 @@ export default function AddBook() {
                   type="text"
                   id="isbn"
                   name="isbn"
-                  value={isbn}
-                  onChange={(e) => setIsbn(e.target.value)}
+                  value={formData.isbn}
+                  onChange={(e) => setFormData({ ...formData, isbn: e.target.value })}
                   className="w-64 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400"
-                  placeholder="Enter ISBN number"
                 />
               </div>
 
@@ -103,10 +133,9 @@ export default function AddBook() {
                   type="text"
                   id="publishedYear"
                   name="publishedYear"
-                  value={publishedYear}
-                  onChange={(e) => setPublishedYear(e.target.value)}
+                  value={formData.publishedYear}
+                  onChange={(e) => setFormData({ ...formData, publishedYear: e.target.value })}
                   className="w-64 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400"
-                  placeholder="e.g., 2024"
                 />
               </div>
 
@@ -114,8 +143,7 @@ export default function AddBook() {
                 <hr className="mb-4 border-gray-300" />
                 <div className="flex gap-20">
                   <button
-                    type="button"
-                    onClick={handleClick}
+                    type="button"   onClick={handleClick}
                     className="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700 hover:border-blue-500 hover:text-blue-500 hover:opacity-80 transition"
                   >
                     Cancel
@@ -124,7 +152,7 @@ export default function AddBook() {
                     type="submit"
                     className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-md text-white text-sm"
                   >
-                    Add Book
+                    Update Book
                   </button>
                 </div>
               </div>
