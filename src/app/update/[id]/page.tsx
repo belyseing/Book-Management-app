@@ -4,20 +4,11 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface Post {
-  _id?: string;
-  title: string;
-  author: string;
-  isbn: number;
-  publishedYear: number;
-}
-
 export default function UpdateBook() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id;
 
-  const [book, setBook] = useState<Post | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -31,11 +22,10 @@ export default function UpdateBook() {
         const res = await fetch(`https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`);
         if (!res.ok) throw new Error("Failed to fetch book");
         const data = await res.json();
-        setBook(data);
         setFormData({
           title: data.title,
           author: data.author,
-          isbn: data.isbn,
+          isbn: String(data.isbn),
           publishedYear: String(data.publishedYear),
         });
       } catch (err) {
@@ -51,7 +41,7 @@ export default function UpdateBook() {
     router.push("/");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const res = await fetch(`https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`, {
@@ -78,7 +68,8 @@ export default function UpdateBook() {
     <div className="bg-white">
       <div className="text-black">
         <div className="p-8">
-          <button onClick={handleClick}
+          <button
+            onClick={handleClick}
             className="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700 hover:border-teal-500 hover:text-teal-500 hover:opacity-80 transition"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -143,7 +134,8 @@ export default function UpdateBook() {
                 <hr className="mb-4 border-gray-300" />
                 <div className="flex gap-20">
                   <button
-                    type="button"   onClick={handleClick}
+                    type="button"
+                    onClick={handleClick}
                     className="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700 hover:border-blue-500 hover:text-blue-500 hover:opacity-80 transition"
                   >
                     Cancel

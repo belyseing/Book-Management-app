@@ -40,10 +40,7 @@ export default function ViewBookPage() {
     }
   }, [id]);
 
-  const handleEdit = (id:string) => {
-    router.push(`/update/${id}`)
-  }
-
+  
   return (
     <div className="min-h-screen p-8 bg-white text-black">
       <button
@@ -60,12 +57,7 @@ export default function ViewBookPage() {
               <p className="text-3xl font-bold">{book.title}</p>
               <p className="text-gray-700"><strong>by</strong> {book.author}</p>
             </div>
-            <button
-              onClick={() =>  handleEdit(book.id)}
-              className="ml-auto px-4 py-1 bg-teal-500 text-white rounded hover:bg-teal-400"
-            >
-              Edit
-            </button>
+           
           </div>
           <p>
             <strong>ISBN<br /></strong>

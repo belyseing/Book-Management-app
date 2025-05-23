@@ -7,8 +7,8 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiEdit } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 
-interface Post {
-  id: string;
+interface Book {
+  _id: string;
   title: string;
   author: string;
   isbn: number;
@@ -17,23 +17,18 @@ interface Post {
 
 export default function Home() {
   const router = useRouter();
-  const [books, setBooks] = useState<Post[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
 
   const fetchBooks = async () => {
     try {
       const response = await axios.get(
         "https://book-management-api-jvxp.onrender.com/api/v1/books"
       );
-      const mappedBooks = response.data.map((book: any) => ({
-        id: book._id,
-        title: book.title,
-        author: book.author,
-        isbn: book.isbn,
-        publishedYear: book.publishedYear,
-      }));
-      setBooks(mappedBooks);
+
+      // Assuming API returns an array of books directly
+      setBooks(response.data);
     } catch (error) {
-      console.log("Error fetching books:", error);
+      console.error("Error fetching books:", error);
     }
   };
 
@@ -45,26 +40,24 @@ export default function Home() {
     router.push("/posts");
   };
 
-
   const handleDelete = async (id: string) => {
     try {
       await axios.delete(
         `https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`
       );
-      // Update UI after deletion
-      setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+      setBooks((prevBooks) => prevBooks.filter((book) => book._id !== id));
     } catch (error) {
-      console.log("Error deleting book:", error);
+      console.error("Error deleting book:", error);
     }
   };
 
-  const handleUpdate = (id:string) => {
-    router.push(`/update/${id}`)
-  }
+  const handleUpdate = (id: string) => {
+    router.push(`/update/${id}`);
+  };
 
-  const handleView = (id:string) => {
-    router.push(`/view/${id}`)
-  }
+  const handleView = (id: string) => {
+    router.push(`/view/${id}`);
+  };
 
   return (
     <div className="bg-white p-8 overflow-auto flex flex-col">
@@ -87,50 +80,25 @@ export default function Home() {
           <table className="min-w-full table-auto border border-gray-300 border-separate border-spacing-y-3">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">
-                  Title
-                </th>
-                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">
-                  Author
-                </th>
-                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">
-                  ISBN
-                </th>
-                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">
-                  Published Year
-                </th>
-                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">
-                  Actions
-                </th>
+                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">Title</th>
+                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">Author</th>
+                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">ISBN</th>
+                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">Published Year</th>
+                <th className="px-4 py-2 text-left text-black font-bold border-b border-gray-200">Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {books.map((book) => (
-                <tr key={book.id} className="hover:bg-gray-50 text-black">
-                  <td className="px-4 py-2 border-b border-gray-200">
-                    {book.title}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-200">
-                    {book.author}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-200">
-                    {book.isbn}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-200">
-                    {book.publishedYear}
-                  </td>
+                <tr key={book._id} className="hover:bg-gray-50 text-black">
+                  <td className="px-4 py-2 border-b border-gray-200">{book.title}</td>
+                  <td className="px-4 py-2 border-b border-gray-200">{book.author}</td>
+                  <td className="px-4 py-2 border-b border-gray-200">{book.isbn}</td>
+                  <td className="px-4 py-2 border-b border-gray-200">{book.publishedYear}</td>
                   <td className="px-4 py-2 border-b border-gray-200">
                     <div className="flex space-x-4">
-                      <FaBookOpen
-                        onClick={() => handleView(book.id)}
-                        className="text-teal-600 cursor-pointer"
-                      />
-                      <FiEdit  onClick={() => handleUpdate(book.id)}    className="text-teal-600 cursor-pointer" />
-                      <RiDeleteBin6Line
-                        onClick={() => handleDelete(book.id)}
-                        className="text-red-600 cursor-pointer"
-                      />
+                      <FaBookOpen onClick={() => handleView(book._id)} className="text-teal-600 cursor-pointer" />
+                      <FiEdit onClick={() => handleUpdate(book._id)} className="text-teal-600 cursor-pointer" />
+                      <RiDeleteBin6Line onClick={() => handleDelete(book._id)} className="text-red-600 cursor-pointer" />
                     </div>
                   </td>
                 </tr>
