@@ -8,7 +8,6 @@ import axios from 'axios';
 export default function AddBook() {
   const router = useRouter();
 
-  // Form state
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [isbn, setIsbn] = useState('');
@@ -19,9 +18,12 @@ export default function AddBook() {
   };
 
   
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+
+    
     try {
       const newBook = {
         title,
@@ -30,9 +32,17 @@ export default function AddBook() {
         publishedYear: Number(publishedYear),
       };
 
+      // This sends the book data to a backend server using axios:
+
+// POST means "send new data".
+// The URL is where your backend is running (on your computer: localhost:4000).
+// newBook is the data you want to send.
+//  We use await because this request takes time — it’s asynchronous.
+// Axios is a JavaScript library used to send and receive data from a server using HTTP requests (like GET, POST, PUT, DELETE).
       await axios.post("http://localhost:4000/api/v1/books", newBook);
 
       alert("Book added successfully!");
+
       router.push("/"); 
     } catch (error) {
       console.error("Error adding book:", error);

@@ -1,14 +1,17 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
+
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function UpdateBook() {
   const router = useRouter();
   const params = useParams();
+ 
   const id = params?.id;
 
+ 
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -19,9 +22,10 @@ export default function UpdateBook() {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const res = await fetch(`https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`);
+        const res = await fetch(`http://localhost:4000/api/v1/books/${id}`);
         if (!res.ok) throw new Error("Failed to fetch book");
         const data = await res.json();
+
         setFormData({
           title: data.title,
           author: data.author,
