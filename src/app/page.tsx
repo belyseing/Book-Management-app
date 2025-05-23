@@ -22,7 +22,7 @@ export default function Home() {
   const fetchBooks = async () => {
     try {
       const response = await axios.get(
-        "https://book-management-api-jvxp.onrender.com/api/v1/books"
+        "http://localhost:4000/api/v1/books"
       );
 
       // Assuming API returns an array of books directly
@@ -43,7 +43,7 @@ export default function Home() {
   const handleDelete = async (id: string) => {
     try {
       await axios.delete(
-        `https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`
+        `http://localhost:4000/api/v1/books/${id}`
       );
       setBooks((prevBooks) => prevBooks.filter((book) => book._id !== id));
     } catch (error) {

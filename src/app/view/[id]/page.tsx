@@ -21,7 +21,7 @@ export default function ViewBookPage() {
     const fetchBook = async () => {
       console.log('Fetching book with ID:', id);
       try {
-        const res = await fetch(`https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`);
+        const res = await fetch(`http://localhost:4000/api/v1/books/${id}`);
         if (!res.ok) {
           const errorData = await res.json();
           console.error('API Error:', errorData);

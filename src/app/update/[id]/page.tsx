@@ -44,7 +44,7 @@ export default function UpdateBook() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await fetch(`https://book-management-api-jvxp.onrender.com/api/v1/books/${id}`, {
+      const res = await fetch(`http://localhost:4000/api/v1/books/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

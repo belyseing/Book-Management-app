@@ -30,7 +30,7 @@ export default function AddBook() {
         publishedYear: Number(publishedYear),
       };
 
-      await axios.post("https://book-management-api-jvxp.onrender.com/api/v1/books", newBook);
+      await axios.post("http://localhost:4000/api/v1/books", newBook);
 
       alert("Book added successfully!");
       router.push("/"); 
